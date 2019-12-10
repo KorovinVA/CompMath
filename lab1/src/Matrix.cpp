@@ -148,16 +148,7 @@ void Matrix::ApplySeidel()
 
 void Matrix::FindConditionNumber()
 {
-	std::cout << "Finding condition number..." << std::endl;
-	double Norm = 0;
-	double invNorm = 0;
-	arma::mat invSystem = arma::inv(System);
-	for (int i = 0; i < MATRIX_HIGH; ++i)
-	{
-		Norm += std::abs(System(i, 0));
-		invNorm += std::abs(invSystem(i, 0));
-	}
 	std::cout << "Success!The condition number : " << std::endl;
-	std::cout << Norm * invNorm << std::endl;
+	std::cout << arma::norm(System) * arma::norm(arma::inv(System)) << std::endl;
 	std::cout << std::endl;
 }
