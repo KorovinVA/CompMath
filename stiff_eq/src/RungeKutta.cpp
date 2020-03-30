@@ -60,7 +60,6 @@ PointApply CalculatePoint(std::array<Point, 3> PrevPoints, float IntegrationSegm
 	bool isapply = false;
 	if (t - lastX > IntegrationSegment / 1000.f)
 	{
-		std::cout << LastY1 << std::endl;
 		isapply = true;
 		t = float(int(lastX) + 1.f);
 	}
