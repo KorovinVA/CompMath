@@ -5,7 +5,7 @@
 #include "video.h"
 
 #define DARK_GRAY sf::Color::Color(65, 65, 65, 255)
-constexpr auto SEGMENT = 40.f;
+constexpr auto SEGMENT = 1000.f;
 
 PointApply CalculatePoint(std::array<Point, 3> PrevPoints, float IntegrationSegment, float lastX);
 
@@ -58,11 +58,10 @@ int main()
 				j->draw(window);
 			}
 		}
-		prevPoint = CalculatePoint(prevPoint.PrevPoints, SEGMENT, points.back()[0].getLocation().x);
-		while (prevPoint.isapply == false)
+		do
 		{
 			prevPoint = CalculatePoint(prevPoint.PrevPoints, SEGMENT, points.back()[0].getLocation().x);
-		}
+		} while (prevPoint.isapply == false);
 		points.push_back(prevPoint.PrevPoints);
 		window.display();
 	}

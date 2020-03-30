@@ -7,7 +7,7 @@
 
 PointApply CalculatePoint(std::array<Point, 3> PrevPoints, float IntegrationSegment, float lastX)
 {
-	float h = 0.0001f;
+	float h = 0.0003f;
 
 	if (PrevPoints[0].getLocation().x >= 1000)
 	{
@@ -60,7 +60,7 @@ PointApply CalculatePoint(std::array<Point, 3> PrevPoints, float IntegrationSegm
 	if (t - lastX > IntegrationSegment / 1000.f)
 	{
 		isapply = true;
-		t = float(int(t) + 1);
+		t = float(int(t) + 1.f);
 	}
 
 	PointApply ret =
