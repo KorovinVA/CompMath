@@ -1,0 +1,1 @@
+The first argument is path-to-dir where examples will be located.
