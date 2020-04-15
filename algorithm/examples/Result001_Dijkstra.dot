@@ -1,0 +1,14 @@
+digraph G{ 
+node [style=filled, fontcolor=black];
+n0[label="1", color=yellow];
+n1[label="6", color=yellow];
+n2[label="3", color=yellow];
+n3[label="2", color=yellow];
+n4[label="5", color=yellow];
+n5[label="4", color=yellow];
+n0 -> n1 [label="11"]
+n0 -> n2 [label="9"]
+n0 -> n3 [label="7"]
+n0 -> n4 [label="20"]
+n0 -> n5 [label="20"]
+}

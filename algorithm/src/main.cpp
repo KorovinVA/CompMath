@@ -2,6 +2,7 @@
 #include <fstream>
 #include <string>
 #include "RBtree.h"
+#include "Graph.h"
 
 void testRBtree(std::string resultdir)
 {
@@ -27,10 +28,28 @@ void testRBtree(std::string resultdir)
 	RBtreeExample2.close();
 }
 
+void testDijkstra(std::string resultdir)
+{
+	Graph* graph = new Graph();
+	std::ofstream DijkstraExample(resultdir + "Before_Dijkstra.dot", std::ofstream::out);
+	assert(DijkstraExample.is_open());
+	graph->PrintGraph(DijkstraExample, false);
+
+	std::ofstream DijkstraResult001(resultdir + "Result001_Dijkstra.dot", std::ofstream::out);
+	assert(DijkstraResult001.is_open());
+	graph->UseDijkstra(DijkstraResult001);
+
+	std::ofstream DijkstraResult002(resultdir + "Result002_Dijkstra.dot", std::ofstream::out);
+	assert(DijkstraResult002.is_open());
+	graph->getChild(0)->UseDijkstra(DijkstraResult002);
+	delete graph;
+}
+
 int main(int argc, char* argv[])
 {
 	assert(argv[1]);
 	std::string ResultDir(argv[1]);
 	testRBtree(ResultDir);
+	testDijkstra(ResultDir);
 	return 0;
 }
