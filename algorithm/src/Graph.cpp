@@ -20,7 +20,7 @@ Graph::Graph(GraphsExamples type)
 	size_t ident = -1;
 	switch (type)
 	{
-	case EXAMPLE_000:
+	case EXAMPLE_001:
 		elements.push_back(std::unique_ptr<Node>(new Node(1, ++ident)));
 		elements.push_back(std::unique_ptr<Node>(new Node(2, ++ident)));
 		elements.push_back(std::unique_ptr<Node>(new Node(3, ++ident)));
@@ -28,7 +28,14 @@ Graph::Graph(GraphsExamples type)
 		elements.push_back(std::unique_ptr<Node>(new Node(5, ++ident)));
 		elements.push_back(std::unique_ptr<Node>(new Node(6, ++ident)));
 		break;
-	case EXAMPLE_001:
+	case EXAMPLE_002:
+		elements.push_back(std::unique_ptr<Node>(new Node(1, ++ident)));
+		elements.push_back(std::unique_ptr<Node>(new Node(2, ++ident)));
+		elements.push_back(std::unique_ptr<Node>(new Node(3, ++ident)));
+		elements.push_back(std::unique_ptr<Node>(new Node(4, ++ident)));
+		elements.push_back(std::unique_ptr<Node>(new Node(5, ++ident)));
+		elements.push_back(std::unique_ptr<Node>(new Node(6, ++ident)));
+		elements.push_back(std::unique_ptr<Node>(new Node(7, ++ident)));
 		break;
 	default:
 		assert(false);
@@ -41,7 +48,7 @@ void Graph::CreateGraph(GraphsExamples type)
 {
 	switch (type)
 	{
-	case EXAMPLE_000:
+	case EXAMPLE_001:
 		elements[0].get()->childs.push_back({ elements[5].get(), 14 });
 		elements[0].get()->childs.push_back({ elements[2].get(), 9 });
 		elements[0].get()->childs.push_back({ elements[1].get(), 7 });
@@ -66,7 +73,35 @@ void Graph::CreateGraph(GraphsExamples type)
 		elements[5].get()->childs.push_back({ elements[2].get(), 2 });
 		elements[5].get()->childs.push_back({ elements[4].get(), 9 });
 		break;
-	case EXAMPLE_001:
+	case EXAMPLE_002:
+		elements[0].get()->childs.push_back({ elements[1].get(), 7 });
+		elements[0].get()->childs.push_back({ elements[6].get(), 5 });
+
+		elements[1].get()->childs.push_back({ elements[0].get(), 7 });
+		elements[1].get()->childs.push_back({ elements[6].get(), 9 });
+		elements[1].get()->childs.push_back({ elements[2].get(), 8 });
+		elements[1].get()->childs.push_back({ elements[3].get(), 7 });
+
+		elements[2].get()->childs.push_back({ elements[1].get(), 8 });
+		elements[2].get()->childs.push_back({ elements[3].get(), 5 });
+
+		elements[3].get()->childs.push_back({ elements[2].get(), 5 });
+		elements[3].get()->childs.push_back({ elements[1].get(), 7 });
+		elements[3].get()->childs.push_back({ elements[6].get(), 15 });
+		elements[3].get()->childs.push_back({ elements[5].get(), 8 });
+		elements[3].get()->childs.push_back({ elements[4].get(), 9 });
+
+		elements[4].get()->childs.push_back({ elements[3].get(), 9 });
+		elements[4].get()->childs.push_back({ elements[5].get(), 11 });
+
+		elements[5].get()->childs.push_back({ elements[6].get(), 6 });
+		elements[5].get()->childs.push_back({ elements[3].get(), 8 });
+		elements[5].get()->childs.push_back({ elements[4].get(), 11 });
+
+		elements[6].get()->childs.push_back({ elements[0].get(), 5 });
+		elements[6].get()->childs.push_back({ elements[1].get(), 9 });
+		elements[6].get()->childs.push_back({ elements[3].get(), 15 });
+		elements[6].get()->childs.push_back({ elements[5].get(), 6 });
 		break;
 	default:
 		assert(false);
@@ -89,12 +124,14 @@ void Graph::PrintGraph(std::ofstream & stream, bool isDebug)
 		for (auto j : i->get()->childs)
 		{
 			if (isDebug)
-				stream << "n" << i->get()->identifier << " -> n" << j.node->identifier << " [label=\"" << j.weigth << "\"];" << std::endl;
+				stream << "n" << i->get()->identifier << " -> n" << j.node->identifier 
+				<< " [label=\"" << j.weigth << "\"];" << std::endl;
 			else
 			{
 				if (!findPair(i->get()->identifier, j.node->identifier, connections))
 				{
-					stream << "n" << i->get()->identifier << " -> n" << j.node->identifier << " [arrowhead=none, label=\"" << j.weigth << "\"];" << std::endl;
+					stream << "n" << i->get()->identifier << " -> n" << j.node->identifier
+						<< " [arrowhead=none, label=\"" << j.weigth << "\"];" << std::endl;
 					connections.push_back({ i->get()->identifier , j.node->identifier });
 				}
 			}

@@ -7,8 +7,8 @@
 
 enum GraphsExamples
 {
-	EXAMPLE_000,
-	EXAMPLE_001
+	EXAMPLE_001,
+	EXAMPLE_002
 };
 
 class Graph

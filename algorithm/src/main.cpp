@@ -32,19 +32,25 @@ void testDijkstra(std::string resultdir)
 {
 	bool Debug = false;
 
-	Graph* graph = new Graph(GraphsExamples::EXAMPLE_000);
-	std::ofstream DijkstraExample(resultdir + "Before_Dijkstra.dot", std::ofstream::out);
-	assert(DijkstraExample.is_open());
-	graph->PrintGraph(DijkstraExample, Debug);
+	Graph* graph_1 = new Graph(GraphsExamples::EXAMPLE_001);
+	std::ofstream DijkstraBefore001(resultdir + "Before_Dijkstra_001.dot", std::ofstream::out);
+	assert(DijkstraBefore001.is_open());
+	graph_1->PrintGraph(DijkstraBefore001, Debug);
 
-	std::ofstream DijkstraResult001(resultdir + "Result001_Dijkstra.dot", std::ofstream::out);
+	std::ofstream DijkstraResult001(resultdir + "Result_Dijkstra_001.dot", std::ofstream::out);
 	assert(DijkstraResult001.is_open());
-	graph->UseDijkstra(DijkstraResult001);
+	graph_1->UseDijkstra(DijkstraResult001);
 
-	//std::ofstream DijkstraResult002(resultdir + "Result002_Dijkstra.dot", std::ofstream::out);
-	//assert(DijkstraResult002.is_open());
-	//graph->getChild(0)->UseDijkstra(DijkstraResult002);
-	delete graph;
+	Graph* graph_2 = new Graph(GraphsExamples::EXAMPLE_002);
+	std::ofstream DijkstraBefore002(resultdir + "Before_Dijkstra_002.dot", std::ofstream::out);
+	assert(DijkstraBefore002.is_open());
+	graph_2->PrintGraph(DijkstraBefore002, Debug);
+
+	std::ofstream DijkstraResult002(resultdir + "Result_Dijkstra_002.dot", std::ofstream::out);
+	assert(DijkstraResult002.is_open());
+	graph_2->UseDijkstra(DijkstraResult002);
+	delete graph_1;
+	delete graph_2;
 }
 
 int main(int argc, char* argv[])
