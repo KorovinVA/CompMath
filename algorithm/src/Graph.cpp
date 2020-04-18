@@ -157,7 +157,7 @@ void Graph::UseDijkstra(std::ofstream & stream)
 		i->get()->DijkstraFlag = false;
 	}
 
-	DijkstraDebug(stream, distance);
+	DijkstraOut(stream, distance);
 }
 
 void Graph::AddVertex(std::vector<size_t>& distance, int weight, Node* root)
@@ -201,7 +201,7 @@ void Graph::AddVertex(std::vector<size_t>& distance, int weight, Node* root)
 		AddVertex(distance, NextVertex.weight, elements.at(NextVertex.ident).get());
 }
 
-void Graph::DijkstraDebug(std::ofstream & stream, std::vector<size_t>& distance)
+void Graph::DijkstraOut(std::ofstream & stream, std::vector<size_t>& distance)
 {
 	stream << "digraph G{ \n" << "node [style=filled, fontcolor=black];" << std::endl;
 	int j = 0;
@@ -214,6 +214,77 @@ void Graph::DijkstraDebug(std::ofstream & stream, std::vector<size_t>& distance)
 	{
 		if (elements[0].get()->identifier != i->get()->identifier)
 			stream << "n" << elements[0].get()->identifier << " -> n" << i->get()->identifier << " [label=\"" << distance[j] << "\"];" << std::endl;
+	}
+	stream << "}" << std::endl;
+}
+
+void Graph::UsePrim(std::ofstream& stream)
+{
+	elements[0].get()->PrimFlag = true;
+	std::pair<Node*, size_t> check = { nullptr, 0 };
+
+	do
+	{
+		check = AddVertex();
+	} while (check.first != nullptr);
+
+	PrimOut(stream);
+	for (auto it = elements.begin(); it != elements.end(); it++)
+	{
+		it->get()->PrimFlag = false;
+		it->get()->parent = nullptr;
+	}
+}
+
+std::pair<Node*, size_t> Graph::AddVertex()
+{
+	std::pair<Node*, size_t> next = { nullptr, 0 };
+
+	for (auto it = elements.begin(); it != elements.end(); it++)
+	{
+		if (it->get()->PrimFlag == false)
+			continue;
+		for (auto j : it->get()->childs)
+		{
+			if (next.first == nullptr && j.node->PrimFlag == false)
+			{
+				next.first = j.node;
+				next.second = j.weigth;
+				next.first->parent = it->get();
+			}
+			else if (next.second > j.weigth && j.node->PrimFlag == false)
+			{
+				next.first = j.node;
+				next.second = j.weigth;
+				next.first->parent = it->get();
+			}
+		}
+	}
+	
+	if(next.first) 
+		next.first->PrimFlag = true;
+
+	return next;
+}
+
+void Graph::PrimOut(std::ofstream& stream)
+{
+	stream << "digraph G{ \n" << "node [style=filled, fontcolor=black];" << std::endl;
+	for (auto it = elements.begin(); it != elements.end(); ++it)
+	{
+		stream << "n" << it->get()->identifier;
+		stream << "[label=\"" << it->get()->m_value << "\"" << ", color=yellow];" << std::endl;
+	}
+	for (auto i = elements.begin(); i != elements.end(); ++i)
+	{
+		for (auto j : i->get()->childs)
+		{
+			if (j.node->parent == nullptr)
+				continue;
+			if(j.node->parent->identifier == i->get()->identifier)
+				stream << "n" << i->get()->identifier << " -> n" << 
+				j.node->identifier << " [label=\"" << j.weigth << "\"];" << std::endl;
+		}
 	}
 	stream << "}" << std::endl;
 }

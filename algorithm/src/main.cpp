@@ -49,8 +49,45 @@ void testDijkstra(std::string resultdir)
 	std::ofstream DijkstraResult002(resultdir + "Result_Dijkstra_002.dot", std::ofstream::out);
 	assert(DijkstraResult002.is_open());
 	graph_2->UseDijkstra(DijkstraResult002);
+
 	delete graph_1;
 	delete graph_2;
+
+	DijkstraBefore001.close();
+	DijkstraBefore002.close();
+	DijkstraResult001.close();
+	DijkstraResult002.close();
+}
+
+void testPrim(std::string resultdir)
+{
+	bool Debug = false;
+
+	Graph* graph_1 = new Graph(GraphsExamples::EXAMPLE_001);
+	std::ofstream PrimBefore001(resultdir + "Before_Prim_001.dot", std::ofstream::out);
+	assert(PrimBefore001.is_open());
+	graph_1->PrintGraph(PrimBefore001, Debug);
+
+	std::ofstream PrimResult001(resultdir + "Result_Prim_001.dot", std::ofstream::out);
+	assert(PrimResult001.is_open());
+	graph_1->UsePrim(PrimResult001);
+
+	Graph* graph_2 = new Graph(GraphsExamples::EXAMPLE_002);
+	std::ofstream PrimBefore002(resultdir + "Before_Prim_002.dot", std::ofstream::out);
+	assert(PrimBefore002.is_open());
+	graph_2->PrintGraph(PrimBefore002, Debug);
+
+	std::ofstream PrimResult002(resultdir + "Result_Prim_002.dot", std::ofstream::out);
+	assert(PrimResult002.is_open());
+	graph_2->UsePrim(PrimResult002);
+
+	delete graph_1;
+	delete graph_2;
+
+	PrimBefore001.close();
+	PrimBefore002.close();
+	PrimResult001.close();
+	PrimResult002.close();
 }
 
 int main(int argc, char* argv[])
@@ -59,5 +96,6 @@ int main(int argc, char* argv[])
 	std::string ResultDir(argv[1]);
 	testRBtree(ResultDir);
 	testDijkstra(ResultDir);
+	testPrim(ResultDir);
 	return 0;
 }

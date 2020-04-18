@@ -12,8 +12,10 @@ public:
 		size_t weigth;
 	};
 	std::vector<Vertex> childs;
+	Node* parent;
 
 	int m_value;
 	int identifier;
 	bool DijkstraFlag;
+	bool PrimFlag;
 };
