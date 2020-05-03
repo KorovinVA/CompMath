@@ -7,7 +7,7 @@
 
 #define LENGTH 1024
 #define HIGHT 768
-#define CELL_SIZE 8 // Remember: HIGH % CELL_SIZE && LENGTH % CELL_SIZE must be 0 
+#define CELL_SIZE 4 // Remember: HIGH % CELL_SIZE && LENGTH % CELL_SIZE must be 0 
 
 struct Universe
 {

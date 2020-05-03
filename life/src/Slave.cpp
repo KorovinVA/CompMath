@@ -1,10 +1,21 @@
 #include <mpi.h>
 #include <iostream>
-
 #include "Slave.h"
 
-void Slave::AllocateArrays()
+#define SLAVE_TAG 42
+
+void Slave::AllocateSideArrays()
 {
+	if (m_rank != m_size - 1)
+	{
+		arrays.MyRstr = (int*)calloc(HIGHT / CELL_SIZE, sizeof(int));
+		arrays.OthRstr = (int*)calloc(HIGHT / CELL_SIZE, sizeof(int));
+	}
+	if (m_rank != 1)
+	{
+		arrays.MyLstr = (int*)calloc(HIGHT / CELL_SIZE, sizeof(int));
+		arrays.OthLstr = (int*)calloc(HIGHT / CELL_SIZE, sizeof(int));
+	}
 }
 
 void Slave::CalculateNeighbor(std::pair<int, int> coord, int & count)
@@ -12,10 +23,76 @@ void Slave::CalculateNeighbor(std::pair<int, int> coord, int & count)
 	auto pos = m_world.coordinates.find(coord);
 	if (pos != m_world.coordinates.end())
 		count++;
+	else
+	{
+		if (coord.first < 0 && m_rank != 1)
+		{
+			if (arrays.OthLstr[coord.second / CELL_SIZE] != 0)
+				count++;
+		}
+		else if (coord.first >= m_part && m_rank != m_size - 1)
+		{
+			if (arrays.OthRstr[coord.second / CELL_SIZE] != 0)
+				count++;
+		}
+	}
+}
+
+void Slave::putInSideArrays()
+{
+	if (m_rank != m_size - 1)
+	{
+		int i = HIGHT / CELL_SIZE - 1;
+		for (auto rIt = m_world.field.rbegin(); ; ++rIt)
+		{
+			arrays.MyRstr[i] = rIt->isAlive;
+			i--;
+			if (i <= 0)
+				break;
+		}
+	}
+	if (m_rank != 1)
+	{
+		int i = 0;
+		for (auto it = m_world.field.begin(); ; ++it)
+		{
+			arrays.MyLstr[i] = it->isAlive;
+			i++;
+			if (i >= HIGHT / CELL_SIZE)
+				break;
+		}
+	}
+}
+
+void Slave::Communicate()
+{
+	//->
+	if (m_rank == 1 && m_rank != m_size - 1)
+		MPI_Ssend(arrays.MyRstr, HIGHT / CELL_SIZE, MPI_INT, m_rank + 1, SLAVE_TAG, MPI_COMM_WORLD);
+	else if (m_rank != 1 && m_rank != m_size - 1)
+	{
+		MPI_Recv(arrays.OthLstr, HIGHT / CELL_SIZE, MPI_INT, m_rank - 1, SLAVE_TAG, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+		MPI_Ssend(arrays.MyRstr, HIGHT / CELL_SIZE, MPI_INT, m_rank + 1, SLAVE_TAG, MPI_COMM_WORLD);
+	}
+	else if(m_rank == m_size - 1 && m_rank != 1)
+		MPI_Recv(arrays.OthLstr, HIGHT / CELL_SIZE, MPI_INT, m_rank - 1, SLAVE_TAG, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+
+	//<-
+	if (m_rank != 1 && m_rank == m_size - 1)
+		MPI_Ssend(arrays.MyLstr, HIGHT / CELL_SIZE, MPI_INT, m_rank - 1, SLAVE_TAG, MPI_COMM_WORLD);
+	else if (m_rank != 1 && m_rank != m_size - 1)
+	{
+		MPI_Recv(arrays.OthRstr, HIGHT / CELL_SIZE, MPI_INT, m_rank + 1, SLAVE_TAG , MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+		MPI_Ssend(arrays.MyLstr, HIGHT / CELL_SIZE, MPI_INT, m_rank - 1, SLAVE_TAG, MPI_COMM_WORLD);
+	}
+	else if (m_rank == 1 && m_rank != m_size - 1)
+		MPI_Recv(arrays.OthRstr, HIGHT / CELL_SIZE, MPI_INT, m_rank + 1, SLAVE_TAG, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
 }
 
 bool Slave::CreateNextGen()
 {
+	putInSideArrays();
+	Communicate();
 	for (int i = 0; i < m_part; i += CELL_SIZE)
 	{
 		for (int j = 0; j < HIGHT; j += CELL_SIZE)
@@ -29,7 +106,7 @@ bool Slave::CreateNextGen()
 					int x = i / CELL_SIZE;
 					int y = j / CELL_SIZE;
 
-					m_world.field[x * HIGHT / CELL_SIZE + y].isAlive = true;
+					m_world.field[x * HIGHT / CELL_SIZE + y].isAlive = 1;
 					m_world.coordinates.insert({ i, j });
 				}
 			}
@@ -40,7 +117,7 @@ bool Slave::CreateNextGen()
 					int x = i / CELL_SIZE;
 					int y = j / CELL_SIZE;
 
-					m_world.field[x * HIGHT / CELL_SIZE + y].isAlive = false;
+					m_world.field[x * HIGHT / CELL_SIZE + y].isAlive = 0;
 					m_world.coordinates.erase({ i, j });
 				}
 			}
@@ -92,7 +169,7 @@ Slave::Slave(int Prank, int Psize)
 	{
 		for (int j = 0; j < HIGHT; j += CELL_SIZE)
 		{
-			Universe::Cell cell(i, j, false);
+			Universe::Cell cell(i, j, 0);
 			m_world.field.push_back(cell);
 			elementsCount++;
 		}
@@ -105,6 +182,7 @@ Slave::Slave(int Prank, int Psize)
 	arrays.MyRstr = nullptr;
 	arrays.OthLstr = nullptr;
 	arrays.OthRstr = nullptr;
+	AllocateSideArrays();
 }
 
 void Slave::run()
@@ -119,7 +197,7 @@ void Slave::run()
 		auto pos = std::find(m_world.field.begin(), m_world.field.end(), Universe::Cell(x, y, false));
 		if (pos != m_world.field.end())
 		{
-			pos->isAlive = true;
+			pos->isAlive = 1;
 			m_world.coordinates.insert({ x, y });
 		}
 	}
@@ -132,4 +210,8 @@ void Slave::run()
 Slave::~Slave()
 {
 	free(arrays.cells);
+	if (arrays.MyLstr) free(arrays.MyLstr);
+	if (arrays.OthLstr) free(arrays.OthLstr);
+	if (arrays.MyRstr) free(arrays.MyRstr);
+	if (arrays.OthRstr) free(arrays.OthRstr);
 }

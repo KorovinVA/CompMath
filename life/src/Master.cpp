@@ -129,7 +129,6 @@ void Master::run()
 	std::pair<int, int> end = { -1, -1 };
 	for (auto it : Init)
 	{
-		//std::cerr << it.x << std::endl;
 		int Dest = it.x / m_part + 1;
 		it.x = it.x - (Dest - 1)* m_part;
 		it.x = it.x - it.x % CELL_SIZE;

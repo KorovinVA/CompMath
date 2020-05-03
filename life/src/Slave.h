@@ -22,8 +22,10 @@ class Slave
 	int m_part;
 	Universe m_world;
 
-	void AllocateArrays();
+	void AllocateSideArrays();
 	void CalculateNeighbor(std::pair<int, int> coord, int& count);
+	void putInSideArrays();
+	void Communicate();
 	bool CreateNextGen();
 	bool Calcs(int x, int y, int& count, bool isCurCellAlive);
 public:
