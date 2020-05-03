@@ -5,9 +5,9 @@
 #include <vector>
 #include <utility>
 
-constexpr auto LENGTH = 1024;
-constexpr auto HIGHT = 768;
-constexpr auto CELL_SIZE = 8; // Remember: HIGH % CELL_SIZE must be 0 
+#define LENGTH 1024
+#define HIGHT 768
+#define CELL_SIZE 8 // Remember: HIGH % CELL_SIZE && LENGTH % CELL_SIZE must be 0 
 
 struct Universe
 {

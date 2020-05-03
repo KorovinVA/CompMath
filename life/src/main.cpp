@@ -1,10 +1,7 @@
 #include <mpi.h>
-
 #include <iostream>
-#include "Universe.h"
-
-void DoRootWork(int Psize);
-void DoNotRootWork(int Prank, int Psize);
+#include "Slave.h"
+#include "Master.h"
 
 int main(int argc, char* argv[])
 {
@@ -16,10 +13,15 @@ int main(int argc, char* argv[])
 	MPI_Comm_size(MPI_COMM_WORLD, &Psize);
 
 	if (Prank != 0)
-		DoNotRootWork(Prank, Psize);
+	{
+		Slave proc(Prank, Psize);
+		proc.run();
+	}
 	else
-		DoRootWork(Psize);
-
+	{
+		Master proc(Psize);
+		proc.run();
+	}
 	std::cout << "Process number " << Prank << " has exited succesfully." << std::endl;
 	MPI_Finalize();
 	return 0;
