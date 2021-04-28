@@ -40,7 +40,7 @@ public:
 
 	Hypergraph& operator=(const Hypergraph& oth);
 	void print();
-
+	void out();
 private:
 	void initPartions();
 

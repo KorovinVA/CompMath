@@ -16,6 +16,7 @@ static std::string inputFileName;
 
 void testAlgo(benchmark::State& state)
 {
+	outFd.open(inputFileName + ".part.2");
 	Hypergraph graph = Hypergraph(inputFileName);
 	Algo FM = Algo(graph);
 
@@ -25,6 +26,7 @@ void testAlgo(benchmark::State& state)
 	}
 
 	FM.print();
+	outFd.close();
 }
 
 int main(int argc, char** argv)
@@ -36,7 +38,6 @@ int main(int argc, char** argv)
 	}
 
 	inputFileName = std::string(argv[1]);
-	outFd.open(inputFileName + ".part.2");
 
 	benchmark::RegisterBenchmark("FMAlgo", testAlgo);
 	benchmark::RunSpecifiedBenchmarks();

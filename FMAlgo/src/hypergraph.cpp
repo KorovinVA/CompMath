@@ -98,6 +98,14 @@ void Hypergraph::print()
 #endif // _LOG_
 }
 
+void Hypergraph::out()
+{
+	for (auto it : indexPartion)
+	{
+		outFd << static_cast<uint32_t>(it) << "\n";
+	}
+}
+
 void Hypergraph::calculateCut()
 {
 	cut = 0;

@@ -41,7 +41,8 @@ void Algo::run()
 
 void Algo::print()
 {
-	graph.print();
+	//graph.print();
+	graph.out();
 }
 
 int Algo::pass(GainContainer& gc)

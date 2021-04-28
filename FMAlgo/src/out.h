@@ -1,4 +1,4 @@
 #pragma once
 
-#define _LOG_
+//#define _LOG_
 extern std::ofstream outFd;
